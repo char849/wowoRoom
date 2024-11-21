@@ -6,9 +6,10 @@ import * as api from "./api.js";
 
 // 取得產品列表
 let productData = [];
-// loding 動畫載入
-utils.toggleLoading(true);
+
 const getProductList = async () => {
+  // loding 動畫載入
+  utils.toggleLoading(true);
   try {
     const res = await api.getProductList();    
     productData = res.data.products;
@@ -118,6 +119,8 @@ add
 
 // 加入購物車
 const addCart = async (id) => {
+  // loding 動畫載入
+  // utils.toggleLoading(true);
   let numCart = 1;
   cartData.forEach((item) => {
     if (item.product.id === id) {
@@ -131,13 +134,13 @@ const addCart = async (id) => {
       quantity: numCart,
     },
   };
-  // loding 動畫載入
-  // utils.toggleLoading(true);
+  
   try {
     const res = await api.addCart(data);
     cartData = res.data.carts;
     cartTotal = res.data.finalTotal;
     console.log(cartData);
+    // utils.toggleLoading(false);
     renderCarts();
   } catch (err) {
     console.error(err.message);
@@ -169,9 +172,12 @@ cartListTfoot.addEventListener("click", (e) => {
 
 // 刪除單一品項
 const deleteCart = async (id) => {
+  // loding 動畫載入
+  // utils.toggleLoading(true);
   try {
     const res = await api.deleteCart(id);
     cartData = res.data.carts;
+    // utils.toggleLoading(false);
     renderCarts();
   } catch (err) {
     console.error(err);
