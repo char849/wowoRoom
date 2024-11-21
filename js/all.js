@@ -10,12 +10,13 @@ let productData = [];
 utils.toggleLoading(true);
 const getProductList = async () => {
   try {
-    const res = await api.getProductList();
+    const res = await api.getProductList();    
     productData = res.data.products;
-    renderProductList(productData);
+    utils.toggleLoading(false);
+    renderProductList(productData);    
   } catch (err) {
-    console.error(err);
-  } 
+    console.error(err); 
+  }
 };
 
 // 渲染產品列表
@@ -118,7 +119,6 @@ add
 // 加入購物車
 const addCart = async (id) => {
   let numCart = 1;
-
   cartData.forEach((item) => {
     if (item.product.id === id) {
       numCart = item.quantity += 1;
@@ -131,7 +131,8 @@ const addCart = async (id) => {
       quantity: numCart,
     },
   };
-
+  // loding 動畫載入
+  // utils.toggleLoading(true);
   try {
     const res = await api.addCart(data);
     cartData = res.data.carts;
