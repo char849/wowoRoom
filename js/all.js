@@ -1,3 +1,5 @@
+// import "https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js";
+
 // 匯入 共用工具
 import * as utils from "./utils.js";
 
@@ -120,10 +122,11 @@ add
 };
 
 // 加入購物車
-const addCart = async (id) => {
+const addCart = async (id, cartTitle) => {
   // loding 動畫載入
-  // utils.toggleLoading(true);
-  let numCart = 1;
+  utils.toggleLoading(true);
+  let numCart = 1;  
+
   cartData.forEach((item) => {
     if (item.product.id === id) {
       numCart = item.quantity += 1;
@@ -139,11 +142,12 @@ const addCart = async (id) => {
 
   try {
     const res = await api.addCart(data);
-    cartData = res.data.carts;
-    cartTotal = res.data.finalTotal;
-    console.log(cartData);
-    // utils.toggleLoading(false);
+    cartData = res.data.carts;       
+    cartTotal = res.data.finalTotal;    
+    utils.toggleLoading(false);
     renderCarts();
+    utils.swalMassage("已加入購物車", "success", 800);
+
   } catch (err) {
     console.error(err.message);
   }
@@ -156,10 +160,14 @@ productList.addEventListener("click", (e) => {
 
 // 刪除所有購物車品項
 const deleteAllCarts = async () => {
+  // loding 動畫載入
+  utils.toggleLoading(true);
   try {
     const res = await api.deleteAllCarts();
     cartData = res.data.carts;
+    utils.toggleLoading(false);
     renderCarts();
+    utils.swalMassage("已清空溝物車", "success", 800);
   } catch (err) {
     console.error(err);
   }
@@ -175,13 +183,14 @@ cartListTfoot.addEventListener("click", (e) => {
 // 刪除單一品項
 const deleteCart = async (id) => {
   // loding 動畫載入
-  // utils.toggleLoading(true);
+  utils.toggleLoading(true);
   try {
     const res = await api.deleteCart(id);
     cartData = res.data.carts;
     cartTotal = calculateCartTotal(cartData);
-    // utils.toggleLoading(false);
+    utils.toggleLoading(false);
     renderCarts();
+    utils.swalMassage('刪除單一產品成功', 'success', 800);
   } catch (err) {
     console.error(err);
   }
@@ -195,12 +204,15 @@ const updateCart = async (id, qty) => {
       quantity: qty,
     },
   };
-
+  // loding 動畫載入
+  utils.toggleLoading(true);
   try {
     const res = await api.updateCart(data);
     cartData = res.data.carts;
+    utils.toggleLoading(false);
     cartTotal = calculateCartTotal(cartData);
     renderCarts();
+    utils.swalMassage('購物車商品數量已更新', 'success', 800);
   } catch (err) {
     console.error(err);
   }
@@ -244,6 +256,106 @@ const calculateCartTotal = (cartData) => {
     return total + item.product.price * item.quantity;
   }, 0);
 };
+
+// 送出訂單
+const orderInfoBtn = document.querySelector(".orderInfo-btn");
+const orderInfoForm = document.querySelector(".orderInfo-form");
+
+const checkFrom = () => { 
+  const constraints = {
+    姓名: {
+      presence: { message: "是必填欄位" },
+    },
+    電話: {
+      presence: {
+        message: "是必填的欄位",
+      },
+      format: {
+        pattern: /^09\d{2}-?\d{3}-?\d{3}$/,
+        message: "開頭須為09",
+      },
+      length: {
+        is: 10,
+        message: "長度須為10碼",
+      },
+    },
+    Email: {
+      presence: {
+        message: "是必填的欄位",
+      },
+      format: {
+        pattern: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
+        message: "格式輸入錯誤，需有@ 、.等符號",
+      },
+    },
+    寄送地址: {
+      presence: { message: "是必填欄位" },
+    },
+  };
+  const errors = validate(orderInfoForm, constraints);
+  console.log(errors);
+  if (errors) {
+    const errorsArr = Object.keys(errors);
+    errorsArr.forEach((item) => {
+      console.log(item);
+      const message = document.querySelector(`[data-message='${item}']`);
+      message.textContent = errors[item][0];
+    });
+  }
+  return errors;
+};
+
+const apiAddOrder = async () => {
+  // 購物車沒有資料就 return
+  if (cartData.length === 0) {
+    alert("購物車不得為空");
+    return;
+  }
+  // 驗證沒通過就 return
+  if (checkFrom()) {
+    alert("必填");
+    return;
+  }
+
+  const customerName = document.querySelector("#customerName");
+  const customerPhone = document.querySelector("#customerPhone");
+  const customerEmail = document.querySelector("#customerEmail");
+  const customerAddress = document.querySelector("#customerAddress");
+  const tradeWay = document.querySelector("#tradeWay");
+
+  const data = {
+    data: {
+      user: {
+        name: customerName.value.trim(),
+        tel: customerPhone.value.trim(),
+        email: customerEmail.value.trim(),
+        address: customerAddress.value.trim(),
+        payment: tradeWay.value,
+      },
+    },
+  };
+
+  checkFrom();
+
+  // loding 動畫載入
+  utils.toggleLoading(true);
+
+  try {
+    const res = await api.apiAddOrder(data);
+    console.log(res);
+    utils.toggleLoading(false);
+    getCartList();
+    utils.swalMassage('己送出您的訂單', 'success', 800);
+    orderInfoForm.reset();
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+
+orderInfoBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  apiAddOrder();
+});
 
 // 初始化
 const init = () => {

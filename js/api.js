@@ -21,3 +21,4 @@ export const addCart = (data) => userRequest.post("/carts", data);
 export const deleteAllCarts = () => userRequest.delete("/carts");
 export const deleteCart = (id) => userRequest.delete(`/carts/${id}`);
 export const updateCart = (data) => userRequest.patch("/carts", data);
+export const apiAddOrder = (data) => userRequest.post('/orders', data);

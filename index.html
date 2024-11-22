@@ -286,13 +286,8 @@
         <option value="收納">收納</option>
         <option value="窗簾">窗簾</option>
       </select>
-      <ul class="productWrap">
-        
-      </ul>
-      <!-- Page Preloder -->
-      <div id="preloder">
-        <div class="loader"></div>
-      </div>
+      <ul class="productWrap">       
+      </ul>      
     </section>
     <section class="shoppingCart">
       <h3 class="section-title">我的購物車</h3>
@@ -370,7 +365,7 @@
               placeholder="請輸入姓名"
               name="姓名"
             />
-            <p class="orderInfo-message" data-message="姓名">必填</p>
+            <p class="orderInfo-message" data-message="姓名"></p>
           </div>
         </div>
         <div class="orderInfo-formGroup">
@@ -383,7 +378,7 @@
               placeholder="請輸入電話"
               name="電話"
             />
-            <p class="orderInfo-message" data-message="電話">必填</p>
+            <p class="orderInfo-message" data-message="電話"></p>
           </div>
         </div>
         <div class="orderInfo-formGroup">
@@ -396,7 +391,7 @@
               placeholder="請輸入 Email"
               name="Email"
             />
-            <p class="orderInfo-message" data-message="Email">必填</p>
+            <p class="orderInfo-message" data-message="Email"></p>
           </div>
         </div>
         <div class="orderInfo-formGroup">
@@ -409,7 +404,7 @@
               placeholder="請輸入寄送地址"
               name="寄送地址"
             />
-            <p class="orderInfo-message" data-message="寄送地址">必填</p>
+            <p class="orderInfo-message" data-message="寄送地址"></p>
           </div>
         </div>
         <div class="orderInfo-formGroup">
@@ -426,6 +421,12 @@
       </form>
     </section>
 
+    <!-- Page Preloder -->
+    <div id="preloder">
+      <div class="loader"></div>
+    </div>    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="js/animation.js"></script>
     <script type="module" src="js/api.js"></script>
     <script type="module" src="js/all.js"></script>
