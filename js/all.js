@@ -308,12 +308,12 @@ const checkFrom = () => {
 const apiAddOrder = async () => {
   // 購物車沒有資料就 return
   if (cartData.length === 0) {
-    alert("購物車不得為空");
+    utils.swalMassage('購物車不得為空', 'success', 800);
     return;
   }
   // 驗證沒通過就 return
   if (checkFrom()) {
-    alert("必填");
+    utils.swalMassage('請填寫訂單資料', 'success', 800);
     return;
   }
 
