@@ -11,12 +11,12 @@ const getProductList = async () => {
   // loding 動畫載入
   utils.toggleLoading(true);
   try {
-    const res = await api.getProductList();    
+    const res = await api.getProductList();
     productData = res.data.products;
     utils.toggleLoading(false);
-    renderProductList(productData);    
+    renderProductList(productData);
   } catch (err) {
-    console.error(err); 
+    console.error(err);
   }
 };
 
@@ -91,7 +91,9 @@ const renderCarts = () => {
                       <td>NT$${item.product.origin_price}</td>
                       <td class="quantity-cell" data-cart-qty><button type="button" class="material-symbols-outlined removeBtn">
 remove
-</button>${item.quantity}<button type="button" class="material-symbols-outlined addBtn">
+</button>${
+      item.quantity
+    }<button type="button" class="material-symbols-outlined addBtn">
 add
 </button></td>
                       <td>NT$${item.product.price * item.quantity}</td>
@@ -100,7 +102,7 @@ add
                           clear
                         </a>
                       </td>
-                    </tr`;
+                    </tr>`;
   });
   cartList.innerHTML = str;
   cartListTfoot.innerHTML = `<tr>
@@ -134,7 +136,7 @@ const addCart = async (id) => {
       quantity: numCart,
     },
   };
-  
+
   try {
     const res = await api.addCart(data);
     cartData = res.data.carts;
@@ -144,12 +146,12 @@ const addCart = async (id) => {
     renderCarts();
   } catch (err) {
     console.error(err.message);
-  } 
+  }
 };
 
 productList.addEventListener("click", (e) => {
-  e.preventDefault();  
-  addCart(e.target.dataset.id);  
+  e.preventDefault();
+  addCart(e.target.dataset.id);
 });
 
 // 刪除所有購物車品項
@@ -177,6 +179,7 @@ const deleteCart = async (id) => {
   try {
     const res = await api.deleteCart(id);
     cartData = res.data.carts;
+    cartTotal = calculateCartTotal(cartData);
     // utils.toggleLoading(false);
     renderCarts();
   } catch (err) {
@@ -196,7 +199,6 @@ const updateCart = async (id, qty) => {
   try {
     const res = await api.updateCart(data);
     cartData = res.data.carts;
-    console.log(res);
     cartTotal = calculateCartTotal(cartData);
     renderCarts();
   } catch (err) {
@@ -205,13 +207,13 @@ const updateCart = async (id, qty) => {
 };
 
 cartList.addEventListener("click", (e) => {
-  const id = e.target.closest('tr').dataset.id;   
-  
-  e.preventDefault();  
-  
-  if (e.target.classList.contains("discardBtn")) {    
+  const id = e.target.closest("tr").dataset.id;
+
+  e.preventDefault();
+
+  if (e.target.classList.contains("discardBtn")) {
     deleteCart(id);
-  }  
+  }
 
   if (e.target.classList.contains("addBtn")) {
     let result = {};
