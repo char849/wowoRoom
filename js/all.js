@@ -1,5 +1,3 @@
-// import "https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js";
-
 // 匯入 共用工具
 import * as utils from "./utils.js";
 
@@ -14,7 +12,8 @@ const getProductList = async () => {
   utils.toggleLoading(true);
   try {
     const res = await api.getProductList();
-    productData = res.data.products;
+    const { products: productData } = res.data;
+    // productData = res.data.products; 
     utils.toggleLoading(false);
     renderProductList(productData);
   } catch (err) {
@@ -25,18 +24,18 @@ const getProductList = async () => {
 // 渲染產品列表
 const productList = document.querySelector(".productWrap");
 const renderProductList = (data) => {
-  let str = "";
-  data.forEach((item) => {
-    str += `<li class="productCard">
+  productList.innerHTML = data
+    .map(
+      (item) => `<li class="productCard">
                 <h4 class="productType">新品</h4>
                 <img src="${item.images}" alt="">
-                <a href="#" class="addCardBtn" data-id="${item.id}">加入購物車</a>
+                <a href="#" class="addCardBtn" data-id="${item.id}" data-title="${item.title}">加入購物車</a>
                 <h3>${item.title}</h3>
                 <del class="originPrice">NT$${item.origin_price}</del>
                 <p class="nowPrice">NT$${item.price}</p>
-            </li>`;
-  });
-  productList.innerHTML = str;
+            </li>`
+    )
+    .join('');
 };
 
 // 篩選產品
@@ -63,10 +62,9 @@ let cartData = [];
 let cartTotal = 0;
 const getCartList = async () => {
   try {
-    const res = await api.getCartList();
+    const res = await api.getCartList();    
     cartData = res.data.carts;
-    cartTotal = res.data.finalTotal;
-    console.log(cartData);
+    cartTotal = res.data.finalTotal; 
     renderCarts();
   } catch (err) {
     console.error(err);
@@ -81,9 +79,11 @@ const renderCarts = () => {
     cartList.innerHTML = "購物車無商品...";
     return;
   }
-  let str = "";
-  cartData.forEach((item) => {
-    str += ` <tr data-id="${item.id}">
+
+  cartList.innerHTML = cartData
+    .map(
+      (item) =>
+        `<tr data-id="${item.id}">
                       <td>
                         <div class="cardItem-title">
                           <img src="${item.product.images}" alt="">
@@ -94,19 +94,20 @@ const renderCarts = () => {
                       <td class="quantity-cell" data-cart-qty><button type="button" class="material-symbols-outlined removeBtn">
 remove
 </button>${
-      item.quantity
-    }<button type="button" class="material-symbols-outlined addBtn">
+          item.quantity
+        }<button type="button" class="material-symbols-outlined addBtn">
 add
 </button></td>
                       <td>NT$${item.product.price * item.quantity}</td>
                       <td>
-                        <a href="#" class="material-icons discardBtn">
+                        <a href="#" class="material-icons discardBtn" data-title="${item.product.title}">
                           clear
                         </a>
                       </td>
-                    </tr>`;
-  });
-  cartList.innerHTML = str;
+                    </tr>`
+    )
+    .join("");
+
   cartListTfoot.innerHTML = `<tr>
               <td>
                 <a href="#" class="discardAllBtn">刪除所有品項</a>
@@ -122,10 +123,10 @@ add
 };
 
 // 加入購物車
-const addCart = async (id, cartTitle) => {
+const addCart = async (id, productTitle) => {
   // loding 動畫載入
   utils.toggleLoading(true);
-  let numCart = 1;  
+  let numCart = 1;
 
   cartData.forEach((item) => {
     if (item.product.id === id) {
@@ -141,13 +142,12 @@ const addCart = async (id, cartTitle) => {
   };
 
   try {
-    const res = await api.addCart(data);
-    cartData = res.data.carts;       
-    cartTotal = res.data.finalTotal;    
+    const res = await api.addCart(data);      
+    cartData = res.data.carts;
+    cartTotal = res.data.finalTotal;
     utils.toggleLoading(false);
     renderCarts();
-    utils.swalMassage("已加入購物車", "success", 800);
-
+    utils.swalMassage(`${productTitle}已加入購物車`, "success", 800);
   } catch (err) {
     console.error(err.message);
   }
@@ -155,7 +155,9 @@ const addCart = async (id, cartTitle) => {
 
 productList.addEventListener("click", (e) => {
   e.preventDefault();
-  addCart(e.target.dataset.id);
+  const productId = e.target.dataset.id;
+  const productTitle = e.target.dataset.title;
+  addCart(productId, productTitle);  
 });
 
 // 刪除所有購物車品項
@@ -163,7 +165,7 @@ const deleteAllCarts = async () => {
   // loding 動畫載入
   utils.toggleLoading(true);
   try {
-    const res = await api.deleteAllCarts();
+    const res = await api.deleteAllCarts();   
     cartData = res.data.carts;
     utils.toggleLoading(false);
     renderCarts();
@@ -181,16 +183,16 @@ cartListTfoot.addEventListener("click", (e) => {
 });
 
 // 刪除單一品項
-const deleteCart = async (id) => {
+const deleteCart = async (id, title) => {
   // loding 動畫載入
   utils.toggleLoading(true);
   try {
-    const res = await api.deleteCart(id);
-    cartData = res.data.carts;
+    const res = await api.deleteCart(id);    
+    cartData = res.data.carts;    
     cartTotal = calculateCartTotal(cartData);
     utils.toggleLoading(false);
     renderCarts();
-    utils.swalMassage('刪除單一產品成功', 'success', 800);
+    utils.swalMassage(`刪除單一產品 ${title}成功`, "success", 800);
   } catch (err) {
     console.error(err);
   }
@@ -212,7 +214,7 @@ const updateCart = async (id, qty) => {
     utils.toggleLoading(false);
     cartTotal = calculateCartTotal(cartData);
     renderCarts();
-    utils.swalMassage('購物車商品數量已更新', 'success', 800);
+    utils.swalMassage("購物車商品數量已更新", "success", 800);
   } catch (err) {
     console.error(err);
   }
@@ -220,11 +222,12 @@ const updateCart = async (id, qty) => {
 
 cartList.addEventListener("click", (e) => {
   const id = e.target.closest("tr").dataset.id;
+  const title = e.target.dataset.title;  
 
   e.preventDefault();
 
   if (e.target.classList.contains("discardBtn")) {
-    deleteCart(id);
+    deleteCart(id, title);
   }
 
   if (e.target.classList.contains("addBtn")) {
@@ -261,7 +264,7 @@ const calculateCartTotal = (cartData) => {
 const orderInfoBtn = document.querySelector(".orderInfo-btn");
 const orderInfoForm = document.querySelector(".orderInfo-form");
 
-const checkFrom = () => { 
+const checkFrom = () => {
   const constraints = {
     姓名: {
       presence: { message: "是必填欄位" },
@@ -308,12 +311,12 @@ const checkFrom = () => {
 const apiAddOrder = async () => {
   // 購物車沒有資料就 return
   if (cartData.length === 0) {
-    utils.swalMassage('購物車不得為空', 'success', 800);
+    utils.swalMassage("購物車不得為空", "warning", 800);
     return;
   }
   // 驗證沒通過就 return
   if (checkFrom()) {
-    utils.swalMassage('請填寫訂單資料', 'success', 800);
+    utils.swalMassage("請填寫訂單資料", "warning", 800);
     return;
   }
 
@@ -345,7 +348,7 @@ const apiAddOrder = async () => {
     console.log(res);
     utils.toggleLoading(false);
     getCartList();
-    utils.swalMassage('己送出您的訂單', 'success', 800);
+    utils.swalMassage("己送出您的訂單", "success", 800);
     orderInfoForm.reset();
   } catch (err) {
     console.error(err.message);
