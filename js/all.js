@@ -31,8 +31,8 @@ const renderProductList = (data) => {
                 <img src="${item.images}" alt="">
                 <a href="#" class="addCardBtn" data-id="${item.id}" data-title="${item.title}">加入購物車</a>
                 <h3>${item.title}</h3>
-                <del class="originPrice">NT$${item.origin_price}</del>
-                <p class="nowPrice">NT$${item.price}</p>
+                <del class="originPrice">NT$${utils.tothousands(item.origin_price)}</del>
+                <p class="nowPrice">NT$${utils.tothousands(item.price)}</p>
             </li>`
     )
     .join('');
@@ -90,7 +90,7 @@ const renderCarts = () => {
                           <p>${item.product.title}</p>
                         </div>
                       </td>
-                      <td>NT$${item.product.origin_price}</td>
+                      <td>NT$${utils.tothousands(item.product.origin_price)}</td>
                       <td class="quantity-cell" data-cart-qty><button type="button" class="material-symbols-outlined removeBtn">
 remove
 </button>${
@@ -98,7 +98,7 @@ remove
         }<button type="button" class="material-symbols-outlined addBtn">
 add
 </button></td>
-                      <td>NT$${item.product.price * item.quantity}</td>
+                      <td>NT$${utils.tothousands(item.product.price * item.quantity)}</td>
                       <td>
                         <a href="#" class="material-icons discardBtn" data-title="${item.product.title}">
                           clear
@@ -117,7 +117,7 @@ add
               <td>
                 <p>總金額</p>
               </td>
-              <td>NT$${cartTotal}</td>
+              <td>NT$${utils.tothousands(cartTotal)}</td>
             </tr>`;
   return;
 };
