@@ -11,9 +11,8 @@ const getProductList = async () => {
   // loding 動畫載入
   utils.toggleLoading(true);
   try {
-    const res = await api.getProductList();
-    const { products: productData } = res.data;
-    // productData = res.data.products; 
+    const res = await api.getProductList();    
+    productData = res.data.products; 
     utils.toggleLoading(false);
     renderProductList(productData);
   } catch (err) {
