@@ -15,6 +15,7 @@
 - [axios](https://axios-http.com/)
 - [sweetalert2](https://sweetalert2.github.io/)
 - [validate.js](https://validatejs.org/)
+- [c3.js](https://c3js.org/)
 
 ## 前台開發
 - axios 搭配 Async/Await 與錯誤管理整合
