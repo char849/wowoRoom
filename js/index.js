@@ -11,8 +11,8 @@ const getProductList = async () => {
   // loding 動畫載入
   utils.toggleLoading(true);
   try {
-    const res = await api.getProductList();    
-    productData = res.data.products; 
+    const res = await api.getProductList();
+    productData = res.data.products;
     utils.toggleLoading(false);
     renderProductList(productData);
   } catch (err) {
@@ -28,13 +28,17 @@ const renderProductList = (data) => {
       (item) => `<li class="productCard">
                 <h4 class="productType">新品</h4>
                 <img src="${item.images}" alt="">
-                <a href="#" class="addCardBtn" data-id="${item.id}" data-title="${item.title}">加入購物車</a>
+                <a href="#" class="addCardBtn" data-id="${
+                  item.id
+                }" data-title="${item.title}">加入購物車</a>
                 <h3>${item.title}</h3>
-                <del class="originPrice">NT$${utils.tothousands(item.origin_price)}</del>
+                <del class="originPrice">NT$${utils.tothousands(
+                  item.origin_price
+                )}</del>
                 <p class="nowPrice">NT$${utils.tothousands(item.price)}</p>
             </li>`
     )
-    .join('');
+    .join("");
 };
 
 // 篩選產品
@@ -61,9 +65,9 @@ let cartData = [];
 let cartTotal = 0;
 const getCartList = async () => {
   try {
-    const res = await api.getCartList();    
+    const res = await api.getCartList();
     cartData = res.data.carts;
-    cartTotal = res.data.finalTotal; 
+    cartTotal = res.data.finalTotal;
     renderCarts();
   } catch (err) {
     console.error(err);
@@ -89,7 +93,9 @@ const renderCarts = () => {
                           <p>${item.product.title}</p>
                         </div>
                       </td>
-                      <td>NT$${utils.tothousands(item.product.origin_price)}</td>
+                      <td>NT$${utils.tothousands(
+                        item.product.origin_price
+                      )}</td>
                       <td class="quantity-cell" data-cart-qty><button type="button" class="material-symbols-outlined removeBtn">
 remove
 </button>${
@@ -97,9 +103,13 @@ remove
         }<button type="button" class="material-symbols-outlined addBtn">
 add
 </button></td>
-                      <td>NT$${utils.tothousands(item.product.price * item.quantity)}</td>
+                      <td>NT$${utils.tothousands(
+                        item.product.price * item.quantity
+                      )}</td>
                       <td>
-                        <a href="#" class="material-icons discardBtn" data-title="${item.product.title}">
+                        <a href="#" class="material-icons discardBtn" data-title="${
+                          item.product.title
+                        }">
                           clear
                         </a>
                       </td>
@@ -141,7 +151,7 @@ const addCart = async (id, productTitle) => {
   };
 
   try {
-    const res = await api.addCart(data);      
+    const res = await api.addCart(data);
     cartData = res.data.carts;
     cartTotal = res.data.finalTotal;
     utils.toggleLoading(false);
@@ -156,7 +166,7 @@ productList.addEventListener("click", (e) => {
   e.preventDefault();
   const productId = e.target.dataset.id;
   const productTitle = e.target.dataset.title;
-  addCart(productId, productTitle);  
+  addCart(productId, productTitle);
 });
 
 // 刪除所有購物車品項
@@ -164,10 +174,10 @@ const deleteAllCarts = async () => {
   // loding 動畫載入
   utils.toggleLoading(true);
   try {
-    const res = await api.deleteAllCarts();   
-    cartData = res.data.carts;
-    utils.toggleLoading(false);
+    const res = await api.deleteAllCarts();
+    cartData = res.data.carts;    
     renderCarts();
+    utils.toggleLoading(false);
     utils.swalMassage("已清空溝物車", "success", 800);
   } catch (err) {
     console.error(err);
@@ -186,11 +196,11 @@ const deleteCart = async (id, title) => {
   // loding 動畫載入
   utils.toggleLoading(true);
   try {
-    const res = await api.deleteCart(id);    
-    cartData = res.data.carts;    
-    cartTotal = calculateCartTotal(cartData);
-    utils.toggleLoading(false);
+    const res = await api.deleteCart(id);
+    cartData = res.data.carts;
+    cartTotal = calculateCartTotal(cartData);    
     renderCarts();
+    utils.toggleLoading(false);
     utils.swalMassage(`刪除單一產品 ${title}成功`, "success", 800);
   } catch (err) {
     console.error(err);
@@ -209,10 +219,10 @@ const updateCart = async (id, qty) => {
   utils.toggleLoading(true);
   try {
     const res = await api.updateCart(data);
-    cartData = res.data.carts;
-    utils.toggleLoading(false);
+    cartData = res.data.carts;    
     cartTotal = calculateCartTotal(cartData);
     renderCarts();
+    utils.toggleLoading(false);
     utils.swalMassage("購物車商品數量已更新", "success", 800);
   } catch (err) {
     console.error(err);
@@ -221,7 +231,7 @@ const updateCart = async (id, qty) => {
 
 cartList.addEventListener("click", (e) => {
   const id = e.target.closest("tr").dataset.id;
-  const title = e.target.dataset.title;  
+  const title = e.target.dataset.title;
 
   e.preventDefault();
 
