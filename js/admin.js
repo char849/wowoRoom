@@ -106,8 +106,7 @@ discardAllBtn.addEventListener("click", (e) => {
 
 // 修改訂單狀態
 const updateOrder = async (id) => {
-  let result = orderData.find((order) => order.id === id);
-  console.log(result.paid);
+  let result = orderData.find((order) => order.id === id);  
 
   const data = {
     data: {
@@ -119,6 +118,7 @@ const updateOrder = async (id) => {
     const res = await api.updateOrder(data);
     console.log(res);
     orderData = res.data.orders;
+    utils.swalMassage("訂單狀態修改成功", "success", 800);
     renderOrders();
   } catch (err) {
     console.error(err.message);
